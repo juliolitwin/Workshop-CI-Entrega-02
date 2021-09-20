@@ -59,3 +59,32 @@ test-backend:       # Segunda etapa a ser realizada após a compilação do back
     - docker-compose run --entrypoint "npm run unittest" backend
   after_script:
     - echo "Teste(s) finalizado."
+
+###########################################################
+# Front End
+###########################################################
+
+# 1. Build e Deploy do Frontend.
+build-deploy-frontend:       # Primeira etapa a ser realizada, compilação do frontend.
+  stage: build_deploy
+  before_script:
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
+  script:
+    - echo "Compilando frontend..."
+    - docker build -f "./frontend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_FRONT:latest" "./frontend"
+    - echo "Frontend compilado."
+  after_script:
+    - echo "Build do frontend finalizado."
+    - echo "Realizando o deploy do frontend..."
+    - docker push "$DOCKER_HUB_USER/$DOCKER_HUB_FRONT:latest"
+    - echo "Deploy do frontend finalizado."
+
+# 2. Teste(s) do Frontend.
+test-frontend:       # Segunda etapa a ser realizada após a compilação do frontend, realizar os testes no frontend.
+  image: docker/compose:latest
+  stage: test
+  script:
+    - echo "Realizando o(s) teste(s) ao frontend..."
+    - docker-compose run --entrypoint "npm run unittest" frontend
+  after_script:
+    - echo "Teste(s) finalizado."
