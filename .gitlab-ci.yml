@@ -25,9 +25,8 @@ services:
 
 # Lista de estágios para trabalhos e sua ordem de execução 
 stages:          
-  - build   # Compilar
-  - test    # Testar
-  - deploy  # Deploy
+  - build_deploy  # Compilar e Deploy
+  - test          # Testar
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
@@ -36,15 +35,20 @@ before_script:
 # Back End
 ###########################################################
 
-# 1. Build do Backend.
-build-backend:       # Primeira etapa a ser realizada, compilação do backend.
+# 1. Build e Deploy do Backend.
+build-deploy-backend:       # Primeira etapa a ser realizada, compilação do backend.
   stage: build
+  before_script:
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
   script:
     - echo "Compilando backend..."
     - docker build -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
     - echo "Backend compilado."
   after_script:
     - echo "Build do Backend finalizado."
+    - echo "Realizando o deploy do backend..."
+    - docker push "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest"
+    - echo "Deploy do backend finalizado."
 
 # 2. Teste(s) do Backend.
 test-backend:       # Segunda etapa a ser realizada após a compilação do backend, realizar os testes no backend.
@@ -55,14 +59,3 @@ test-backend:       # Segunda etapa a ser realizada após a compilação do back
     - docker-compose run --entrypoint "npm run unittest" backend
   after_script:
     - echo "Teste(s) finalizado."
-
-# 3. Deploy o Backend.
-deploy-backend:       # Terceira etapa a ser realizado o deploy do backend ao dockerhub.
-  stage: deploy
-  before_script:
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
-  script:
-    - echo "Realizando o deploy do backend..."
-    - docker push "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest"
-  after_script:
-    - echo "Deploy finalizado."
