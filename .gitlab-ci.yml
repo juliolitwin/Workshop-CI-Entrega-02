@@ -34,21 +34,17 @@ stages:
 
 build-backend:       # Primeira etapa a ser realizada, compilação do backend.
   stage: build
-  before_script:
-    #- cd ./backend # Ir para o diretório do backend.
   script:
     - echo "Compilando backend..."
     - docker build -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
     - echo "Backend compilado."
   after_script:
-    - "Backend finalizado."
+    - "Build do Backend finalizado."
 
 test-backend:       # Segunda etapa a ser realizada após a compilação do backend, realizar os testes no backend.
   stage: test
-  before_script:
-    #- cd ./backend # Ir para o diretório do backend.
   script:
     - echo "Realizando o(s) teste(s) ao backend..."
-    - docker-compose run --entrypoint "npm run unittest" backend
+    - docker run --entrypoint "npm" "$DOCKER_HUB_USER/$DOCKER_HUB_BACK" run unittest
   after_script:
     - "Teste(s) finalizado."
