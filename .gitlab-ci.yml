@@ -45,7 +45,7 @@ test-backend:       # Segunda etapa a ser realizada após a compilação do back
   stage: test
   script:
     - echo "Realizando o(s) teste(s) ao backend..."
-    - docker pull $DOCKER_HUB_USER/$DOCKER_HUB_BACK"
+    - docker pull "$DOCKER_HUB_USER/$DOCKER_HUB_BACK"
     - docker run --entrypoint "npm" "$DOCKER_HUB_USER/$DOCKER_HUB_BACK" run unittest
   after_script:
     - "Teste(s) finalizado."
