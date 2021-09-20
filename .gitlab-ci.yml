@@ -85,6 +85,6 @@ test-frontend:       # Segunda etapa a ser realizada após a compilação do fro
   stage: test
   script:
     - echo "Realizando o(s) teste(s) ao frontend..."
-    - docker-compose run --entrypoint "npm run unittest" frontend
+    - docker-compose run --entrypoint "npm run coverage" frontend
   after_script:
     - echo "Teste(s) finalizado."
