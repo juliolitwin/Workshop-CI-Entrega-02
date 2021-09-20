@@ -40,7 +40,7 @@ build-backend:       # Primeira etapa a ser realizada, compilação do backend.
   stage: build
   script:
     - echo "Compilando backend..."
-    - docker build --cache-from -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
+    - docker build -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
     - echo "Backend compilado."
   after_script:
     - echo "Build do Backend finalizado."
