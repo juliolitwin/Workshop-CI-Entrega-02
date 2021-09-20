@@ -12,8 +12,9 @@
 #
 # For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
 
-# Global
-# Definir imagem e services global para os demais.
+###########################################################
+# Global - Definir imagem e services global para os demais.
+###########################################################
 
 # Definindo a versão da imagem do docker na qual será utilizada.
 image: $DOCKER_VERSION
@@ -28,6 +29,9 @@ stages:
   - test    # Testar
   #- deploy  # Deploy
 
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
 ###########################################################
 # Back End
 ###########################################################
@@ -36,17 +40,17 @@ build-backend:       # Primeira etapa a ser realizada, compilação do backend.
   stage: build
   script:
     - echo "Compilando backend..."
-    - docker build -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
+    - docker build --cache-from -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
     - echo "Backend compilado."
     - docker push $DOCKER_HUB_USER/$DOCKER_HUB_BACK
   after_script:
     - echo "Build do Backend finalizado."
 
 test-backend:       # Segunda etapa a ser realizada após a compilação do backend, realizar os testes no backend.
+  image: docker/compose:latest
   stage: test
   script:
     - echo "Realizando o(s) teste(s) ao backend..."
-    - docker pull "$DOCKER_HUB_USER/$DOCKER_HUB_BACK"
-    - docker run --entrypoint "npm" "$DOCKER_HUB_USER/$DOCKER_HUB_BACK" run unittest
+    - docker-compose run --entrypoint "npm run unittest" backend
   after_script:
     - echo "Teste(s) finalizado."
