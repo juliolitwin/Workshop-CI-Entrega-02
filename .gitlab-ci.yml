@@ -37,7 +37,7 @@ before_script:
 
 # 1. Build e Deploy do Backend.
 build-deploy-backend:       # Primeira etapa a ser realizada, compilação do backend.
-  stage: build
+  stage: build_deploy
   before_script:
     - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PW
   script:
