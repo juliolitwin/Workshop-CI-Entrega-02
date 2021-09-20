@@ -36,10 +36,11 @@ build-backend:       # Primeira etapa a ser realizada, compilação do backend.
   stage: build
   script:
     - echo "Compilando backend..."
-    - docker build -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK" "./backend"
+    - docker build -f "./backend/Dockerfile" -t "$DOCKER_HUB_USER/$DOCKER_HUB_BACK:latest" "./backend"
     - echo "Backend compilado."
+    - docker push $DOCKER_HUB_USER/$DOCKER_HUB_BACK
   after_script:
-    - "Build do Backend finalizado."
+    - echo "Build do Backend finalizado."
 
 test-backend:       # Segunda etapa a ser realizada após a compilação do backend, realizar os testes no backend.
   stage: test
@@ -48,4 +49,4 @@ test-backend:       # Segunda etapa a ser realizada após a compilação do back
     - docker pull "$DOCKER_HUB_USER/$DOCKER_HUB_BACK"
     - docker run --entrypoint "npm" "$DOCKER_HUB_USER/$DOCKER_HUB_BACK" run unittest
   after_script:
-    - "Teste(s) finalizado."
+    - echo "Teste(s) finalizado."
